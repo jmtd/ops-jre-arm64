@@ -18,7 +18,7 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Configure apt repositories for multi-arch
-      - run: |
+        run: |
           # limit existing mirrors to native architecture
           export NATIVE_ARCH="$(dpkg --print-architecture)"
           sed -i "s/^Types/Architectures: $NATIVE_ARCH\nTypes/" /etc/apt/sources.list.d/ubuntu.sources
