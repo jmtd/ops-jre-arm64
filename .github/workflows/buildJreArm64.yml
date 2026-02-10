@@ -21,10 +21,10 @@ jobs:
         run: |
           # limit existing mirrors to native architecture
           export NATIVE_ARCH="$(dpkg --print-architecture)"
-          sed -i "s/^Types/Architectures: $NATIVE_ARCH\nTypes/" /etc/apt/sources.list.d/ubuntu.sources
+          sudo sed -i "s/^Types/Architectures: $NATIVE_ARCH\nTypes/" /etc/apt/sources.list.d/ubuntu.sources
 
           # add appropriate arm64 mirror
-          cat >/etc/apt/sources.list.d/arm64.sources <<EOF
+          sudo tee >/etc/apt/sources.list.d/arm64.sources <<EOF
           Types: deb
           URIs: http://ports.ubuntu.com/ubuntu-ports
           Suites: noble noble-updates noble-backports noble-security
