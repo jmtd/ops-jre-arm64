@@ -83,7 +83,7 @@ jobs:
           # ----------------------------
           # Install Semeru JRE in sysroot
           # ----------------------------
-          cd ${PKG_NAME}/sysroot
+          cd ${WORK}
           wget -O jre.tar.gz ${JRE_URL}
           mkdir -p ${JRE_DIR}
           tar -xzf jre.tar.gz --strip-components=1 -C ${JRE_DIR}
