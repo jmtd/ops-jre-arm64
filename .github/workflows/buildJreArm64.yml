@@ -37,7 +37,7 @@ jobs:
         run: |
           sudo dpkg --add-architecture arm64
           sudo apt-get update
-          sudo apt-get install -y wget tar
+          sudo apt-get install -y qemu-system qemu-user qemu-user-static wget tar
 
       - name: Install ops (NanoVMs)
         run: |
