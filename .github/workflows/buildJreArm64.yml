@@ -17,6 +17,22 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
+      - name: Configure apt repositories for multi-arch
+      - run: |
+          # limit existing mirrors to native architecture
+          export NATIVE_ARCH="$(dpkg --print-architecture)"
+          sed -i "s/^Types/Architectures: $NATIVE_ARCH\nTypes/" /etc/apt/sources.list.d/ubuntu.sources
+
+          # add appropriate arm64 mirror
+          cat >/etc/apt/sources.list.d/arm64.sources <<EOF
+          Types: deb
+          URIs: http://ports.ubuntu.com/ubuntu-ports
+          Suites: noble noble-updates noble-backports noble-security
+          Components: main
+          Signed-By: /usr/share/keyrings/ubuntu-archive-keyring.gpg
+          Architectures: arm64
+          EOF
+
       - name: Install system utilities
         run: |
           sudo dpkg --add-architecture arm64
