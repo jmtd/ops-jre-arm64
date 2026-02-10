@@ -19,8 +19,9 @@ jobs:
 
       - name: Install system utilities
         run: |
+          sudo dpkg --add-architecture arm64
           sudo apt-get update
-          sudo apt-get install -y qemu-system qemu-user qemu-user-static wget tar
+          sudo apt-get install -y wget tar
 
       - name: Install ops (NanoVMs)
         run: |
@@ -41,28 +42,27 @@ jobs:
         run: |
           export PKG_NAME=${PACKAGE_BASENAME}_${VERSION}
           mkdir -p ${PKG_NAME}/sysroot
+          export WORK=${PKG_NAME}/sysroot
+
+          set -e
+          sudo apt-get install -y -qq {libc6,libstdc++6,zlib1g}:arm64
+          mkdir -p "$WORK"/lib "$WORK"/lib64 "$WORK"/usr/lib/aarch64-linux-gnu
 
           # ----------------------------
           # Populate Linux ARM64 sysroot
           # ----------------------------
-          docker run --rm --platform linux/arm64 \
-            -v $(pwd)/${PKG_NAME}/sysroot:/work \
-            ubuntu:24.04 bash -c "
-              set -e
-              apt-get update -qq
-              apt-get install -y -qq libc6 libstdc++6 zlib1g
-              mkdir -p /work/lib /work/lib64 /work/usr/lib/aarch64-linux-gnu
-              cp /lib/ld-linux-aarch64.so.1 /work/lib/
-              cp /lib/ld-linux-aarch64.so.1 /work/lib64/
-              cp /lib/aarch64-linux-gnu/libc.so.6 /work/usr/lib/aarch64-linux-gnu/
-              cp /lib/aarch64-linux-gnu/libm.so.6 /work/usr/lib/aarch64-linux-gnu/
-              cp /lib/aarch64-linux-gnu/libpthread.so.0 /work/usr/lib/aarch64-linux-gnu/
-              cp /lib/aarch64-linux-gnu/libdl.so.2 /work/usr/lib/aarch64-linux-gnu/
-              cp /lib/aarch64-linux-gnu/librt.so.1 /work/usr/lib/aarch64-linux-gnu/
-              cp /lib/aarch64-linux-gnu/libgcc_s.so.1 /work/usr/lib/aarch64-linux-gnu/
-              cp /usr/lib/aarch64-linux-gnu/libstdc++.so.6 /work/usr/lib/aarch64-linux-gnu/
-              cp /usr/lib/aarch64-linux-gnu/libz.so.1 /work/usr/lib/aarch64-linux-gnu/
-            "
+          cp /lib/ld-linux-aarch64.so.1 "$WORK"/lib/
+          cp /lib/ld-linux-aarch64.so.1 "$WORK"/lib64/
+          cd /lib/aarch64-linux-gnu
+          cp libc.so.6 \
+             libm.so.6 \
+             libpthread.so.0 \
+             libdl.so.2 \
+             librt.so.1 \
+             libgcc_s.so.1 \
+             libstdc++.so.6 \
+             libz.so.1 \
+             "$WORK/usr/lib/aarch64-linux-gnu/"
 
           # ----------------------------
           # Install Semeru JRE in sysroot
