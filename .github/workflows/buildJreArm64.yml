@@ -58,17 +58,17 @@ jobs:
         run: |
           export PKG_NAME=${PACKAGE_BASENAME}_${VERSION}
           mkdir -p ${PKG_NAME}/sysroot
-          export WORK=${PKG_NAME}/sysroot
+          export WORK=$PWD/${PKG_NAME}/sysroot
 
-          set -e
+          set -ex
           sudo apt-get install -y -qq {libc6,libstdc++6,zlib1g}:arm64
-          mkdir -p "$WORK"/lib "$WORK"/lib64 "$WORK"/usr/lib/aarch64-linux-gnu
+          mkdir -p "$WORK/lib" "$WORK/lib64" "$WORK/usr/lib/aarch64-linux-gnu"
 
           # ----------------------------
           # Populate Linux ARM64 sysroot
           # ----------------------------
-          cp /lib/ld-linux-aarch64.so.1 "$WORK"/lib/
-          cp /lib/ld-linux-aarch64.so.1 "$WORK"/lib64/
+          cp /lib/ld-linux-aarch64.so.1 "$WORK/lib/"
+          cp /lib/ld-linux-aarch64.so.1 "$WORK/lib64/"
           cd /lib/aarch64-linux-gnu
           cp libc.so.6 \
              libm.so.6 \
